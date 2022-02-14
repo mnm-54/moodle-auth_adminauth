@@ -23,45 +23,49 @@
  */
 
 require_once("$CFG->libdir/externallib.php");
-require_once(__DIR__ . '/../../config.php');
-require_once($CFG->libdir . '/lib/moodlelib.php');
+require_once($CFG->libdir . "/moodlelib.php");
 
-class auth_adminauth_login_verification extends external_api
+class auth_adminauth_external_login extends external_api
 {
-    public static function login_verification_parameters()
+    public static function admin_login_parameters()
     {
         return new external_function_parameters(
             array(
-                'username' => new external_value(PARAM_INT, "Username"),
-                'password' => new external_value(PARAM_INT, "Password"),
-                'token' => new external_value(PARAM_INT, "token")
+                'username' => new external_value(PARAM_TEXT, "Username"),
+                'password' => new external_value(PARAM_TEXT, "Password"),
+                'token' => new external_value(PARAM_TEXT, "Token")
             )
         );
     }
-    public static function login_verification($username, $password, $token)
+
+    public static function admin_login($username, $password, $token)
     {
-        global $DB;
-        if ($token == "12345") {
-            $status = authenticate_user_login($username, $password);
-            // die(var_dump($status));
-            $return_value = [
-                'user' => $username,
-                'status' => 'processing'
-            ];
-            return $return_value;
-        }
+        global $DB, $CFG;
         $return_value = [
             'user' => $username,
-            'status' => 'token didnt match'
+            'status' => 'login failed'
         ];
+        if ($token == '12345') {
+            $ustat = $DB->get_record('auth_adminauth', array('username' => $username));
+            $ustat->status = 1;
+            $DB->update_record('auth_adminauth', $ustat);
+            $user = authenticate_user_login($username, $password);
+            if ($user) {
+                $return_value = [
+                    'user' => $username,
+                    'status' => 'login successful'
+                ];
+            }
+        }
         return $return_value;
     }
-    public static function login_verification_returns()
+
+    public static function admin_login_returns()
     {
         return new external_single_structure(
             array(
-                'user' => new external_value(PARAM_INT, 'username'),
-                'status' => new external_value(PARAM_TEXT, 'status of user')
+                'user' => new external_value(PARAM_TEXT, 'id of deleted fish'),
+                'status' => new external_value(PARAM_TEXT, 'deleted')
             )
         );
     }

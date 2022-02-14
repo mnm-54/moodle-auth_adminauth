@@ -21,21 +21,17 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-define([
-  "jquery",
-  "core/ajax",
-  "core/str",
-  "core/modal_factory",
-  "core/modal_events",
-  "core/notification",
-], function ($, Ajax, Notification) {
+define(["jquery", "core/ajax", "core/notification"], function (
+  $,
+  Ajax,
+  Notification
+) {
   $(".btn-input").on("click", function () {
-    console.log("processing");
-    password = document.getElementById("password").value;
-    token = document.getElementById("token").value;
-    user = document.getElementById("username").innerHTML;
+    let password = document.getElementById("password").value;
+    let token = document.getElementById("token").value;
+    let user = document.getElementById("username").innerHTML;
 
-    let wsfunction = "adminauth_token_password_verification";
+    let wsfunction = "auth_adminauth_login";
     let params = {
       username: user,
       password: password,
@@ -48,8 +44,10 @@ define([
 
     Ajax.call([request])[0]
       .done(function () {
-        window.location.href = $(location).attr("href");
+        window.location.href = "http://localhost/moodle";
       })
       .fail(Notification.exception);
+
+    console.log("here");
   });
 });

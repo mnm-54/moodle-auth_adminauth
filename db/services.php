@@ -25,22 +25,22 @@
 defined('MOODLE_INTERNAL') || die();
 
 $functions = array(
-    'auth_adminauth_token_password_verification' => array(
-        'classname' => 'auth_adminauth_login_verification',
-        'methodname'  => 'login_verification',
+    'auth_adminauth_login' => array(
+        'classname' => 'auth_adminauth_external_login',
+        'methodname'  => 'admin_login',
         'classpath'   => 'auth/adminauth/externallib.php',
-        'description' => 'Check admin user for its token and password',
+        'description' => 'Admin login through token',
         'type'        => 'write',
         'ajax' => true,
     )
 );
 
 $services = array(
-    'auth_adminauth_verification' => array(
-        'functions' => array('auth_adminauth_token_password_verification'),
+    'auth_adminauth_confirmation' => array(
+        'functions' => array('auth_adminauth_login'),
         'restrictedusers' => 0,
         // into the administration
         'enabled' => 1,
-        'shortname' =>  'admin_auth_func',
+        'shortname' =>  'auth_adminauth_service',
     )
 );

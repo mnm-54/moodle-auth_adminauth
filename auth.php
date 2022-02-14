@@ -57,23 +57,46 @@ class auth_plugin_adminauth extends auth_plugin_base
      */
     function user_login($username, $password)
     {
-        global $CFG, $DB, $PAGE;
-        if ($user = $DB->get_record('user', array('username' => $username, 'mnethostid' => $CFG->mnet_localhost_id))) {
-            // $PAGE->requires->js_call_amd('adminauth/confirm_modal', "init", array());
-            if (validate_internal_user_password($user, $password)) {
-                return true;
-            }
-        }
-        // return false;
-    }
-    public function user_authenticated_hook($user, $username, $password)
-    {
         global $CFG, $DB;
         $user = $DB->get_record('user', array('username' => $username, 'mnethostid' => $CFG->mnet_localhost_id));
-        $mail = $user->email;
-        if (strpos($mail, 'admin') || strpos($mail, 'Admin'))
-            redirect($CFG->wwwroot . '/auth/adminauth/checktoken.php?user=' . $username);
+        if ($user) {
+            if (validate_internal_user_password($user, $password)) {
+                $mail = $user->email;
+                if (strpos($mail, 'admin') || strpos($mail, 'Admin')) {
+                    $ustat = $DB->get_record('auth_adminauth', array('username' => $username));
+                    if ($ustat) {
+                        //die(var_dump($ustat->status));
+                        if ($ustat->status == '1' || $ustat->status == 1) {
+                            $ustat->status = 0;
+                            $DB->update_record('auth_adminauth', $ustat);
+                            return true;
+                        } else {
+                            redirect($CFG->wwwroot . '/auth/adminauth/checktoken.php?user=' . $username);
+                        }
+                    } else {
+                        die(var_dump(2));
+                        $ustat = new stdClass();
+                        $ustat->username = $username;
+                        $ustat->status = 0;
+                        $DB->insert_record('auth_adminauth', $ustat);
+                        redirect($CFG->wwwroot . '/auth/adminauth/checktoken.php?user=' . $username);
+                    }
+                    die(var_dump($ustat));
+                } else
+                    return true;
+            }
+        }
+        return false;
     }
+
+    // public function user_authenticated_hook($user, $username, $password)
+    // {
+    //     global $CFG, $DB;
+    //     $user = $DB->get_record('user', array('username' => $username, 'mnethostid' => $CFG->mnet_localhost_id));
+    //     $mail = $user->email;
+    //     if (strpos($mail, 'admin') || strpos($mail, 'Admin'))
+    //         redirect($CFG->wwwroot . '/auth/adminauth/checktoken.php?user=' . $username);
+    // }
 
     public function checkadmintoken()
     {
