@@ -30,6 +30,6 @@ if ($token == 'null') {
             redirect($CFG->wwwroot . "/login/index.php", "login failed", null, \core\output\notification::NOTIFY_ERROR);
         }
     } else {
-        echo "wrong token";
+        redirect($CFG->wwwroot . "/login/index.php", "login failed, wrong token", null, \core\output\notification::NOTIFY_ERROR);
     }
 }

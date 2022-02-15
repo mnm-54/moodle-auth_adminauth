@@ -48,6 +48,7 @@ class auth_plugin_adminauth extends auth_plugin_base
 
     /**
      * Returns true if the username and password work 
+     * Redirects to a token page if user is an admin
      * Returns false if the user exists and the password is wrong or user dont exist
      *
      * @param string $username The username
@@ -82,15 +83,6 @@ class auth_plugin_adminauth extends auth_plugin_base
         }
         return false;
     }
-
-    // public function user_authenticated_hook($user, $username, $password)
-    // {
-    //     global $CFG, $DB;
-    //     $user = $DB->get_record('user', array('username' => $username, 'mnethostid' => $CFG->mnet_localhost_id));
-    //     $mail = $user->email;
-    //     if (strpos($mail, 'admin') || strpos($mail, 'Admin'))
-    //         redirect($CFG->wwwroot . '/auth/adminauth/checktoken.php?user=' . $username);
-    // }
 
     /**
      * Updates the user's password.
