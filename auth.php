@@ -26,7 +26,6 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->libdir . '/authlib.php');
 require_once(__DIR__ . '/../../config.php');
-require_once($CFG->dirroot . '/auth/adminauth/classes/forms/checkform.php');
 
 /**
  * Plugin for admin authentication.
@@ -64,26 +63,21 @@ class auth_plugin_adminauth extends auth_plugin_base
                 $mail = $user->email;
                 if (strpos($mail, 'admin') || strpos($mail, 'Admin')) {
                     $ustat = $DB->get_record('auth_adminauth', array('username' => $username));
-                    if ($ustat) {
-                        //die(var_dump($ustat->status));
-                        if ($ustat->status == '1' || $ustat->status == 1) {
-                            $ustat->status = 0;
-                            $DB->update_record('auth_adminauth', $ustat);
-                            return true;
-                        } else {
-                            redirect($CFG->wwwroot . '/auth/adminauth/checktoken.php?user=' . $username);
-                        }
-                    } else {
-                        die(var_dump(2));
+                    if (!$ustat) {
                         $ustat = new stdClass();
                         $ustat->username = $username;
                         $ustat->status = 0;
-                        $DB->insert_record('auth_adminauth', $ustat);
-                        redirect($CFG->wwwroot . '/auth/adminauth/checktoken.php?user=' . $username);
+                        $DB->insert_record("auth_adminauth", $ustat);
+                        redirect($CFG->wwwroot . '/auth/adminauth/inputtoken.php?username=' . $username . '&password=' . $password);
                     }
-                    die(var_dump($ustat));
-                } else
-                    return true;
+                    if ($ustat->status == '0' || $ustat->status == 0) {
+                        redirect($CFG->wwwroot . '/auth/adminauth/inputtoken.php?username=' . $username . '&password=' . $password);
+                    } else {
+                        $ustat->status = 0;
+                        $DB->update_record('auth_adminauth', $ustat);
+                        return true;
+                    }
+                } else return true;
             }
         }
         return false;
@@ -97,19 +91,6 @@ class auth_plugin_adminauth extends auth_plugin_base
     //     if (strpos($mail, 'admin') || strpos($mail, 'Admin'))
     //         redirect($CFG->wwwroot . '/auth/adminauth/checktoken.php?user=' . $username);
     // }
-
-    public function checkadmintoken()
-    {
-        $mform = new checkform();
-        $mform->display();
-        //die(var_dump($mform));
-        if ($mform->is_cancelled()) {
-            //Handle form cancel operation, if cancel button is present on form
-            return false;
-        } else if ($fromform = $mform->get_data()) {
-            return true;
-        }
-    }
 
     /**
      * Updates the user's password.

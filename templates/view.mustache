@@ -19,13 +19,30 @@
     }
 }}
 
-<h1 id="username">{{ username }}</h1>
+<h1 id="title">Input token:</h1>
 <form>
+  <label for="username">Username: </label>
+  <input
+    type="text"
+    name="username"
+    id="username"
+    class="form-control"
+    value="{{ username }}"
+  />
   <label for="password">Password: </label>
-  <input type="password" id="password" name="password" /><br /><br />
+  <input
+    type="password"
+    id="password"
+    name="password"
+    class="form-control"
+    value="{{ password }}"
+  /><br /><br />
   <label for="token">Token: </label>
   <input type="text" id="token" name="token" /><br /><br />
+  <input
+    type="submit"
+    class="btn btn-primary btn-block mt-3"
+    id="loginbtn"
+    value="login"
+  />
 </form>
-<button class="btn btn-outline-primary btn-input" id="submitbtn" value="Submit">
-  login
-</button>
