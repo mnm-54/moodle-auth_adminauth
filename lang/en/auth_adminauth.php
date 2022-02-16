@@ -26,3 +26,4 @@ $string['pluginname'] = 'Admin authentication';
 $string['auth_adminauthdescription'] = 'Admin accounts will be verified in 2 way authentication for login';
 $string['token'] = 'Input token';
 $string['password'] = 'Enter Password';
+$string['title_token_page'] = 'Admin login';
