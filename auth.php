@@ -61,9 +61,8 @@ class auth_plugin_adminauth extends auth_plugin_base
         $user = $DB->get_record('user', array('username' => $username, 'mnethostid' => $CFG->mnet_localhost_id));
         if ($user) {
             if (validate_internal_user_password($user, $password)) {
-                $mail = $user->email;
-                if (strpos($mail, 'admin') || strpos($mail, 'Admin')) {
-                    $ustat = $DB->get_record('auth_adminauth', array('username' => $username));
+                if ($this->is_admin_user($user)) {
+                    $ustat = $DB->get_record_select('auth_adminauth', "username = :username", array('username' => $username));
                     if (!$ustat) {
                         $ustat = new stdClass();
                         $ustat->username = $username;
@@ -82,6 +81,12 @@ class auth_plugin_adminauth extends auth_plugin_base
             }
         }
         return false;
+    }
+
+    function is_admin_user($user)
+    {
+        $mail = $user->email;
+        return strpos($mail, 'admin') || strpos($mail, 'Admin');
     }
 
     /**
