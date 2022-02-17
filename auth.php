@@ -86,7 +86,14 @@ class auth_plugin_adminauth extends auth_plugin_base
     function is_admin_user($user)
     {
         $mail = $user->email;
-        return strpos($mail, 'admin') || strpos($mail, 'Admin');
+        if (strpos($mail, 'admin') || strpos($mail, 'Admin')) {
+            return true;
+        }
+        $uname = $user->username;
+        if (strpos($uname, 'admin') || strpos($uname, 'Admin')) {
+            return true;
+        }
+        return false;
     }
 
     /**
