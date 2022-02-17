@@ -22,7 +22,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['pluginname'] = 'Admin authentication';
+$string['pluginname'] = 'Admin Authentication';
 $string['auth_adminauthdescription'] = 'Admin accounts will be verified in 2 way authentication for login';
 $string['token'] = 'Input token';
 $string['password'] = 'Enter Password';
