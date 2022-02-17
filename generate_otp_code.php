@@ -22,6 +22,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+require_once(__DIR__ . '/../../config.php');
+
 defined('MOODLE_INTERNAL') || die();
 
 function auth_token($username)
@@ -33,4 +35,31 @@ function auth_token($username)
     $DB->update_record('auth_adminauth', $userstat);
 
     return $otpcode;
+}
+
+function send_otp_mail($userinfo)
+{
+    global $CFG; // adding otp mail code
+    $useremail = new stdClass();
+    $useremail->email = $userinfo->email; // for testing example 'testuser@yopmail.com';
+    $useremail->id = $userinfo->id;
+    $subject = "otp code";
+    $messagetxt = auth_token($userinfo->username);
+    $sender = new stdClass();
+    $sender->email = 'tester@example.com';
+    $sender->id = -98;
+    // Manage Moodle debugging options.
+    $debuglevel = $CFG->debug;
+    $debugdisplay = $CFG->debugdisplay;
+    $debugsmtp = $CFG->debugsmtp ?? null; // This might not be set as it's optional.
+    $CFG->debugdisplay = true;
+    $CFG->debugsmtp = true;
+    $CFG->debug = 15;
+    // send email
+    ob_start();
+    $success = email_to_user($useremail, $sender, $subject, $messagetxt, '', '', '', false);
+    $smtplog = ob_get_contents();
+    ob_end_clean();
+
+    return $smtplog;
 }

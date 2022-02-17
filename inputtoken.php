@@ -36,45 +36,22 @@ $username = optional_param('username', 'null', PARAM_TEXT);
 $password = optional_param('password', 'null', PARAM_TEXT);
 $token = optional_param('token', 'null', PARAM_TEXT);
 
-
-$userinfo = $DB->get_record('user', array('username' => $username, 'mnethostid' => $CFG->mnet_localhost_id));
-
-$templetecontext = (object)[
-    'username' => $username,
-    'password' => $password,
-];
 if ($token == 'null') {
-    // adding otp mail code
-    $useremail = new stdClass();
-    $useremail->email = $userinfo->email; // for testing example 'testuser@yopmail.com';
-    $useremail->id = $userinfo->id;
-    $subject = "otp code";
-    $messagetxt = auth_token($username);
-    $sender = new stdClass();
-    $sender->email = 'tester@example.com';
-    $sender->id = -98;
-    // Manage Moodle debugging options.
-    $debuglevel = $CFG->debug;
-    $debugdisplay = $CFG->debugdisplay;
-    $debugsmtp = $CFG->debugsmtp ?? null; // This might not be set as it's optional.
-    $CFG->debugdisplay = true;
-    $CFG->debugsmtp = true;
-    $CFG->debug = 15;
-    // send email
-    ob_start();
-    $success = email_to_user($useremail, $sender, $subject, $messagetxt, '', '', '', false);
-    $smtplog = ob_get_contents();
-    ob_end_clean();
+    $userinfo = $DB->get_record('user', array('username' => $username, 'mnethostid' => $CFG->mnet_localhost_id));
+    send_otp_mail($userinfo);
 
+    $templetecontext = (object)[
+        'username' => $username,
+        'password' => $password,
+    ];
     echo $OUTPUT->header();
     echo $OUTPUT->render_from_template('auth_adminauth/view', $templetecontext);
     echo $OUTPUT->footer();
 } else {
     $userstat = $DB->get_record_select('auth_adminauth', "username = :username", array('username' => $username));
     if ($userstat->otp == $token) {
-        $ustat = $DB->get_record_select('auth_adminauth', "username = :username", array('username' => $username));
-        $ustat->status = 1;
-        $DB->update_record('auth_adminauth', $ustat);
+        $userstat->status = 1;
+        $DB->update_record('auth_adminauth', $userstat);
         $user = authenticate_user_login($username, $password);
         if ($user) {
             complete_user_login($user);
