@@ -21,6 +21,6 @@ PATHTOMOODLE/auth/
 Dashboard/Site administration/Plugins/Authentication/Manage authentication
 ```
 
-- Change authentication method in user's profile in the `Choose an authentication method` drop down field and choose `Admin Authentication`
+- No need to change authentication method of the user
 
 - Now in login, the plugin will look for `admin` in user's username or email and start the 2 way authentication process
