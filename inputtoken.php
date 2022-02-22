@@ -33,7 +33,6 @@ $PAGE->set_context(\context_system::instance());
 $PAGE->set_title(get_string('title_token_page', 'auth_adminauth'));
 
 $username = optional_param('username', 'null', PARAM_TEXT);
-$password = optional_param('password', 'null', PARAM_TEXT);
 $token = optional_param('token', 'null', PARAM_TEXT);
 
 if ($token == 'null') {
@@ -50,15 +49,9 @@ if ($token == 'null') {
 } else {
     $userstat = $DB->get_record_select('auth_adminauth', "username = :username", array('username' => $username));
     if ($userstat->otp == $token) {
-        $userstat->status = 1;
-        $DB->update_record('auth_adminauth', $userstat);
-        $user = authenticate_user_login($username, $password);
-        if ($user) {
-            complete_user_login($user);
-            redirect($CFG->wwwroot, "login successful", null, \core\output\notification::NOTIFY_SUCCESS);
-        } else {
-            redirect($CFG->wwwroot . "/login/index.php", "login failed", null, \core\output\notification::NOTIFY_ERROR);
-        }
+        $user =  $DB->get_record('user', array('username' => $username, 'mnethostid' => $CFG->mnet_localhost_id));
+        complete_user_login($user);
+        redirect($CFG->wwwroot, "login successful", null, \core\output\notification::NOTIFY_SUCCESS);
     } else {
         redirect($CFG->wwwroot . "/login/index.php", "login failed, wrong token", null, \core\output\notification::NOTIFY_ERROR);
     }
