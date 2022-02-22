@@ -81,14 +81,16 @@ class auth_plugin_adminauth extends auth_plugin_base
      * @param string $username (with system magic quotes)
      * @param string $password plain text password (with system magic quotes)
      *
-     * Hook is used to check if password needs to expire and if so
-     * expired it and redirect to defined page (default new password page)
+     * Hook is used to check if user is an admin
+     * and redirect to defined page 
      * 
      */
     function user_authenticated_hook(&$user, $username, $password)
     {
         global $CFG;
-        redirect($CFG->wwwroot . '/auth/adminauth/inputtoken.php?username=' . $username . '&password=' . $password);
+        if ($this->is_admin_user($user)) {
+            redirect($CFG->wwwroot . '/auth/adminauth/inputtoken.php?username=' . $username);
+        }
     }
 
     /**
