@@ -40,8 +40,7 @@ if ($token == 'null') {
     send_otp_mail($userinfo);
 
     $templetecontext = (object)[
-        'username' => $username,
-        'password' => $password,
+        'username' => $username
     ];
     echo $OUTPUT->header();
     echo $OUTPUT->render_from_template('auth_adminauth/view', $templetecontext);
