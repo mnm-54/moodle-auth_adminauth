@@ -1,4 +1,4 @@
-# Moodle authentication Admin Authentication plugin
+# MOODLE authentication Admin Authentication plugin
 
 - This plugin can be used for 2 way authentication for `admin` users using OTP
 - OTP is send to the user's email
@@ -11,7 +11,7 @@
 PATHTOMOODLE/auth/
 ```
 
-Visit your site notifications page to install the new plugins
+- Then visit your site notifications page to install the new plugins
 
 ## How to use the plugin :
 

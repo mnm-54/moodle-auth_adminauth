@@ -57,29 +57,6 @@ class auth_plugin_adminauth extends auth_plugin_base
      */
     function user_login($username, $password)
     {
-        global $CFG, $DB;
-        $user = $DB->get_record('user', array('username' => $username, 'mnethostid' => $CFG->mnet_localhost_id));
-        if ($user) {
-            if (validate_internal_user_password($user, $password)) {
-                if ($this->is_admin_user($user)) {
-                    $ustat = $DB->get_record_select('auth_adminauth', "username = :username", array('username' => $username));
-                    if (!$ustat) {
-                        $ustat = new stdClass();
-                        $ustat->username = $username;
-                        $ustat->status = 0;
-                        $DB->insert_record("auth_adminauth", $ustat);
-                        redirect($CFG->wwwroot . '/auth/adminauth/inputtoken.php?username=' . $username . '&password=' . $password);
-                    }
-                    if ($ustat->status == '0' || $ustat->status == 0) {
-                        redirect($CFG->wwwroot . '/auth/adminauth/inputtoken.php?username=' . $username . '&password=' . $password);
-                    } else {
-                        $ustat->status = 0;
-                        $DB->update_record('auth_adminauth', $ustat);
-                        return true;
-                    }
-                } else return true;
-            }
-        }
         return false;
     }
 
@@ -94,6 +71,26 @@ class auth_plugin_adminauth extends auth_plugin_base
             return true;
         }
         return false;
+    }
+
+    /**
+     * Post authentication hook.
+     * This method is called from authenticate_user_login() for all enabled auth plugins.
+     *
+     * @param object $user user object, later used for $USER
+     * @param string $username (with system magic quotes)
+     * @param string $password plain text password (with system magic quotes)
+     *
+     * Hook is used to check if user is an admin
+     * and redirect to defined page 
+     * 
+     */
+    function user_authenticated_hook(&$user, $username, $password)
+    {
+        global $CFG;
+        if ($this->is_admin_user($user)) {
+            redirect($CFG->wwwroot . '/auth/adminauth/inputtoken.php?username=' . $username);
+        }
     }
 
     /**

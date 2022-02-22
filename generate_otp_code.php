@@ -31,8 +31,12 @@ function auth_token($username)
     global $DB;
     $otpcode = rand(100000, 999999);
     $userstat = $DB->get_record_select('auth_adminauth', "username = :username", array('username' => $username));
-    $userstat->otp = $otpcode;
-    $DB->update_record('auth_adminauth', $userstat);
+    if (!$userstat) {
+        create_user_instance($username, $otpcode);
+    } else {
+        $userstat->otp = $otpcode;
+        $DB->update_record('auth_adminauth', $userstat);
+    }
 
     return $otpcode;
 }
@@ -62,4 +66,14 @@ function send_otp_mail($userinfo)
     ob_end_clean();
 
     return $smtplog;
+}
+
+function create_user_instance($username, $otpcode)
+{
+    global $DB;
+    $userstat = new stdClass();
+    $userstat->username = $username;
+    $userstat->status = 0;
+    $userstat->otp = $otpcode;
+    $DB->insert_record("auth_adminauth", $userstat);
 }
