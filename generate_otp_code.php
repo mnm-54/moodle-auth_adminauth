@@ -76,4 +76,5 @@ function create_user_instance($username, $otpcode)
     $userstat->status = 0;
     $userstat->otp = $otpcode;
     $DB->insert_record("auth_adminauth", $userstat);
+    return;
 }
