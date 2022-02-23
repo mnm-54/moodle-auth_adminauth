@@ -88,7 +88,7 @@ class auth_plugin_adminauth extends auth_plugin_base
     function user_authenticated_hook(&$user, $username, $password)
     {
         global $CFG;
-        if ($this->is_admin_user($user)) {
+        if (!isloggedin() && $this->is_admin_user($user)) {
             redirect($CFG->wwwroot . '/auth/adminauth/inputtoken.php?username=' . $username);
         }
     }
