@@ -23,7 +23,7 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
-
+define('PREF_FIELD_AUTH_PWDEXP_DATE', 'auth_adminauth_pwdexp_date');
 require_once($CFG->libdir . '/authlib.php');
 require_once(__DIR__ . '/../../config.php');
 
@@ -88,10 +88,44 @@ class auth_plugin_adminauth extends auth_plugin_base
     function user_authenticated_hook(&$user, $username, $password)
     {
         global $CFG;
-        $this->config = get_config('auth_adminauth');
-        //die(var_dump($this->config->passexp));
+        $this->checkPasswordExpiration($user);
         if (!isloggedin() && $this->is_admin_user($user)) {
             redirect($CFG->wwwroot . '/auth/adminauth/inputtoken.php?username=' . $username);
+        }
+    }
+
+    /**
+     * Password expiration check
+     * Check if password needs to expire and if so
+     * expired it and redirect to defined page (default new password page)
+     *
+     * @param object $user user object, later used for $USER
+     * @param string $username (with system magic quotes)
+     * @param string $password plain text password (with system magic quotes)
+     * 
+     */
+    function checkPasswordExpiration(&$user)
+    {
+        global $SESSION, $USER;
+        $this->config = get_config('auth_adminauth');
+        if ($this->config->passexp == null || $this->config->passexp == '') {
+            $this->config->passexp = '60';
+        }
+
+        $today = mktime(0, 0, 0, date("m"), date("d"), date("Y"));
+        // default date to -1 so if not found always before today
+        $passwordExpDate = get_user_preferences(PREF_FIELD_AUTH_PWDEXP_DATE, -1, $user->id);
+        // If not settings found don't expire otherwise check date
+        $passwordExpired = ($passwordExpDate <= $today);
+        if ($passwordExpired && ($user->auth == 'manual')) {
+            $expirationdays = $this->config->passexp;
+
+            // force new password change
+            set_user_preference('auth_forcepasswordchange', 1, $user->id);
+
+            // set new date
+            $newexpdate = mktime(0, 0, 0, date("m"), (date("d") + $expirationdays), date("Y"));
+            set_user_preference(PREF_FIELD_AUTH_PWDEXP_DATE, $newexpdate, $user->id);
         }
     }
 
