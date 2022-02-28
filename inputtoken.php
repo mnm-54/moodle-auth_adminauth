@@ -25,6 +25,7 @@
 require_once(__DIR__ . '/../../config.php');
 require_once($CFG->libdir . "/moodlelib.php");
 require_once(__DIR__ . '/generate_otp_code.php');
+require_once(__DIR__ . '/check_pass_exp.php');
 
 global $PAGE, $OUTPUT, $DB;
 
@@ -49,6 +50,9 @@ if ($token == 'null') {
     $userstat = $DB->get_record_select('auth_adminauth', "username = :username", array('username' => $username));
     if ($userstat->otp == $token) {
         $user =  $DB->get_record('user', array('username' => $username, 'mnethostid' => $CFG->mnet_localhost_id));
+        // for password expiration check
+        checkPasswordExpiration($user);
+        // user login
         complete_user_login($user);
         redirect($CFG->wwwroot, "login successful", null, \core\output\notification::NOTIFY_SUCCESS);
     } else {
