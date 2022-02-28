@@ -27,3 +27,6 @@ $string['auth_adminauthdescription'] = 'Admin accounts will be verified in 2 way
 $string['token'] = 'Input token';
 $string['password'] = 'Enter Password';
 $string['title_token_page'] = 'Admin login';
+
+$string['passexp/visiblename'] = 'Password duration';
+$string['passexp/description'] = 'Days after password change';

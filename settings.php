@@ -31,15 +31,13 @@ if ($ADMIN->fulltree) {
         '',
         new lang_string('auth_adminauthdescription', 'auth_adminauth')
     ));
+    $settings->add(new admin_setting_configtext(
+        'auth_adminauth/passexp',
+        get_string('passexp/visiblename', 'auth_adminauth'),
+        get_string('passexp/description', 'auth_adminauth'),
+        60
+    ));
 
     // Display locking / mapping of profile fields.
     $authplugin = get_auth_plugin('adminauth');
-    display_auth_lock_options(
-        $settings,
-        $authplugin->authtype,
-        $authplugin->userfields,
-        get_string('auth_fieldlocks_help', 'auth'),
-        false,
-        false
-    );
 }
