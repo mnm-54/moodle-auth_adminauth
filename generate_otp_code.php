@@ -84,6 +84,12 @@ function create_user_instance($username, $otpcode)
 
 function otp_validity()
 {
-    $otpvalidity = time() + 10 * 60;
+    global $CFG;
+    $config = get_config('auth_adminauth');
+    if ($config->tokenvalidity == null || $config->tokenvalidity = '') {
+        $config->tokenvalidity = '2';
+    }
+
+    $otpvalidity = time() + (int)$config->tokenvalidity * 60;
     return $otpvalidity;
 }
