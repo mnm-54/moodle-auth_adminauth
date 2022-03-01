@@ -37,6 +37,12 @@ if ($ADMIN->fulltree) {
         get_string('passexp/description', 'auth_adminauth'),
         60
     ));
+    $settings->add(new admin_setting_configtext(
+        'auth_adminauth/tokenvalidity',
+        get_string('tokenvalidity/visiblename', 'auth_adminauth'),
+        get_string('tokenvalidity/description', 'auth_adminauth'),
+        2
+    ));
 
     // Display locking / mapping of profile fields.
     $authplugin = get_auth_plugin('adminauth');

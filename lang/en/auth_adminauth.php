@@ -30,3 +30,6 @@ $string['title_token_page'] = 'Admin login';
 
 $string['passexp/visiblename'] = 'Password duration';
 $string['passexp/description'] = 'Days after password change';
+
+$string['tokenvalidity/visiblename'] = 'Token validation time';
+$string['tokenvalidity/description'] =  'Minutes after token becomes invalid';
