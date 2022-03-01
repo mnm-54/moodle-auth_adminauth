@@ -35,6 +35,8 @@ function auth_token($username)
         create_user_instance($username, $otpcode);
     } else {
         $userstat->otp = $otpcode;
+        $userstat->timevalid = otp_validity();
+        $userstat->status = 1;
         $DB->update_record('auth_adminauth', $userstat);
     }
 
@@ -73,8 +75,15 @@ function create_user_instance($username, $otpcode)
     global $DB;
     $userstat = new stdClass();
     $userstat->username = $username;
-    $userstat->status = 0;
+    $userstat->status = 1;
+    $userstat->timevalid = otp_validity();
     $userstat->otp = $otpcode;
     $DB->insert_record("auth_adminauth", $userstat);
     return;
+}
+
+function otp_validity()
+{
+    $otpvalidity = time() + 10 * 60;
+    return $otpvalidity;
 }

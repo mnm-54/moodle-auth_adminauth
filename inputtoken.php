@@ -48,7 +48,12 @@ if ($token == 'null') {
     echo $OUTPUT->footer();
 } else {
     $userstat = $DB->get_record_select('auth_adminauth', "username = :username", array('username' => $username));
-    if ($userstat->otp == $token) {
+    $currentime = time();
+    if ($userstat->otp == $token && $userstat->timevalid >= $currentime && (int)$userstat->status == 1) {
+        // update db
+        $userstat->status = 0;
+        $DB->update_record('auth_adminauth', $userstat);
+
         $user =  $DB->get_record('user', array('username' => $username, 'mnethostid' => $CFG->mnet_localhost_id));
         // for password expiration check
         checkPasswordExpiration($user);
